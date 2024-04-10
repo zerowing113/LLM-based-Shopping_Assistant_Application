@@ -161,6 +161,6 @@ cython_debug/
 
 /logs
 /images
-/data
-/notebook
+# /data
+# /notebook
 .DS_Store

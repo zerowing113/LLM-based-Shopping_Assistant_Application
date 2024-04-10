@@ -128,7 +128,7 @@ class HeadPhoneCellPhones(WebDriverCustomOptions):
                                 'Thông tin chi tiết':all_special_info,
                                 'Hình ảnh': all_url_img,
                                 'Link': all_link_item})
-            df.to_csv("/Users/huynhanhkiet/Desktop/LLMs_VietAI/data/cellphone.csv", index=False)
+            df.to_csv("../data/cellphone.csv", index=False)
             logger.info("Dữ liệu về tai nghe Cellphones đã XONG.")
             logger.info(df.shape[0])
             
@@ -142,19 +142,19 @@ class HeadPhoneCellPhones(WebDriverCustomOptions):
 class HeadPhoneTiki(WebDriverCustomOptions):
     def __init__(self):
         super().__init__() # Gọi phương thức khởi tạo của lớp cha để khởi tạo trình duyệt với các tùy chọn tùy chỉnh
-        # self.url = "https://cellphones.com.vn/thiet-bi-am-thanh/tai-nghe/tai-nghe-bluetooth.html?order=filter_price&dir=desc"
+        # self.url = 
             
 if __name__ == "__main__":
-    # cellphone = HeadPhoneCellPhones()
-    # cellphone.scrape_data()
+    cellphone = HeadPhoneCellPhones()
+    cellphone.scrape_data()
     
-    tiki = HeadPhoneTiki()
-    def scrape_data(self):
-        try:
+    # tiki = HeadPhoneTiki()
+    # def scrape_data(self):
+    #     try:
             
             
-        except Exception as e:
-            raise e
-        finally:
-            self.driver.quit()
+    #     except Exception as e:
+    #         raise e
+    #     finally:
+    #         self.driver.quit()
         
