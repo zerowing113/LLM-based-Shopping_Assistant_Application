@@ -1,0 +1,7 @@
+accelerate==0.28.0
+bitsandbytes==0.42.0
+datasets==2.18.0
+evaluate==0.4.1
+sentencepiece==0.2.0
+transformers @ git+https://github.com/huggingface/transformers.git@00c1d87a7d5c8dfb4554370983b5a3f7c069edd7
+ipywidgets==8.1.2
