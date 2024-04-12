@@ -1,0 +1,54 @@
+{
+  "builder_name": "parquet",
+  "citation": "",
+  "config_name": "default",
+  "dataset_name": "mini-ultrachat",
+  "dataset_size": 95674067,
+  "description": "",
+  "download_checksums": {
+    "hf://datasets/chiennv/mini-ultrachat@aa883be8500df7639af84e07975177c64adf7b66/data/train-00000-of-00001.parquet": {
+      "num_bytes": 39734710,
+      "checksum": null
+    }
+  },
+  "download_size": 39734710,
+  "features": {
+    "id": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "conversations": [
+      {
+        "content": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "role": {
+          "dtype": "string",
+          "_type": "Value"
+        }
+      }
+    ],
+    "source": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 135408777,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 95674067,
+      "num_examples": 10000,
+      "dataset_name": "mini-ultrachat"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}

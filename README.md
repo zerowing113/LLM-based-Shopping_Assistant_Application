@@ -1,5 +1,14 @@
 
 # LLM based Shopping Assistant Application
+Members:
+Name                        | Role                       | Email                        | Github                           | 
+--------------------------- | ---------------------------| -----------------------------| -------------------------------- | 
+Nguyen Nguyen Hoang Huy	    | Data                       |                              |                                  | 
+Phuong Nguyen	            | Product Manager	         |                              |                                  |
+Huỳnh Anh Kiệt	            | Data Scientist	         |                              |                                  |
+Hung Ho Thinh	            | AI Engineer	             |                              |                                  |
+Vo Nhat Nam	                | Machine Learning Engineer	 |                              |                                  |
+
 
 ## Stage data collection:
 1) Tiki:
