@@ -2,6 +2,7 @@ import fire, os
 import torch
 import datasets
 from trl import DataCollatorForCompletionOnlyLM
+from tokenizers import AddedToken
 from transformers import AutoTokenizer, AutoModelForCausalLM, TrainingArguments, Trainer
 
 def load_model(model_name_or_path, max_seq_length):
@@ -11,6 +12,12 @@ def load_model(model_name_or_path, max_seq_length):
         padding_side='right',
     )
     
+    # # Add chat template
+    # tokenizer.chat_template = "{% if not add_generation_prompt is defined %}{% set add_generation_prompt = false %}{% endif %}"
+    # tokenizer.add_tokens([AddedToken("<|im_start|"),
+    #                     AddedToken("<|im_end|>")])
+    # tokenizer.save_pretrained(output_dir)   
+    
     local_rank = os.environ["LOCAL_RANK"]
     model = AutoModelForCausalLM.from_pretrained(
         model_name_or_path,
@@ -18,8 +25,11 @@ def load_model(model_name_or_path, max_seq_length):
         attn_implementation="flash_attention_2",
         device_map=f"cuda:{local_rank}",
     )
-    
+    # model.resize_token_embeddings(len(tokenizer))
+    # model.save_pretrained(output_dir)
+    # print(f"Model and tokenizer is saved to {output_dir}")
     return tokenizer, model
+
 
 def load_dataset(tokenizer: AutoTokenizer, dataset_name_or_path: str, max_seq_length: int):
     
@@ -86,7 +96,10 @@ def train(
 
     trainer.save_model(output_dir)
 
+
 def estimate(zero_level: int, num_gpus: int):
+    # Estimate number of gpus to load model_name
+    
     import deepspeed
     model_name_or_path = 'google/gemma-2b-it'
     
@@ -101,7 +114,7 @@ def estimate(zero_level: int, num_gpus: int):
         deepspeed.runtime.zero.stage_1_and_2.estimate_zero2_model_states_mem_needs_all_live(
             model,
             num_gpus_per_node=num_gpus,
-            num_nodes=1,
+            num_nodes=1, # num_nodes: present for each node with number of gpus. For example: each node have 4 cpu
         )
     elif zero_level == 3:
         deepspeed.runtime.zero.stage3.estimate_zero3_model_states_mem_needs_all_live(
@@ -115,3 +128,6 @@ def estimate(zero_level: int, num_gpus: int):
 if __name__ == "__main__":
     # fire.Fire(train)
     fire.Fire(train)
+    # from datasets import load_dataset
+
+    # dataset = load_dataset("chiennv/mini-ultrachat")
