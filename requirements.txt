@@ -5,3 +5,24 @@ evaluate==0.4.1
 sentencepiece==0.2.0
 transformers @ git+https://github.com/huggingface/transformers.git@00c1d87a7d5c8dfb4554370983b5a3f7c069edd7
 ipywidgets==8.1.2
+langchain-google-vertexai
+langchainhub
+chromadb
+llama-index-vector-stores-chroma
+llama-index-embeddings-huggingface
+llama-index
+llama-index-readers-file
+llama-index-llms-gemini==0.1.8
+google-generativeai==0.4.1
+langchain-google-genai==0.5.4
+llama-index-vector-stores-milvus==0.1.10
+grpcio-status==1.60.0
+grpcio==1.60.0
+gensim==4.3.2
+langchain
+streamlit==1.33.0
+ragas==0.1.7
+llama-index-vector-stores-pinecone==0.1.7
+scikit-learn==1.2.2
+arize-phoenix==2.4.1
+llama-index-llms-langchain==0.1.3
