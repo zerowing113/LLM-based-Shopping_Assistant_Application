@@ -11,13 +11,15 @@ from langchain.memory import (
 from model import langchain_llm, llamaindex_embed_model, llamaindex_llm
 from langchain_core.prompts import PromptTemplate
 from retrieval import Retrieval
+import streamlit as st
+from streamlit_chat import message
 
 # Construct the JSON agent
-from prompt import classify_prompt, react_prompt
+from prompt import classify_prompt, react_prompt,PROMPT_TEMPLATE
 
 classify_prompt = PromptTemplate.from_template(classify_prompt)
+react_prompt_template = PromptTemplate.from_template(react_prompt)
 chain = LLMChain(llm=langchain_llm, prompt=classify_prompt)
-
 
 def tool_get_RAG():
     """Returns the RAG"""
@@ -35,13 +37,12 @@ def tool_get_RAG():
     lc_tool = tool.as_langchain_tool()
     return lc_tool
 
-
 def get_prompt_input(user_input: str):
     # Construct the JSON agent
-    chain = LLMChain(llm=langchain_llm, prompt=classify_prompt)
+    #chain = LLMChain(llm=langchain_llm, prompt=classify_prompt)
     return chain.invoke(
         {
-            "question": f"{user_input}",
+            "question": f"{user_input   }",
             "context": """a. Đề xuất sản phẩm: Sử dụng lời nhắc này khi mục đích của người dùng là khám phá các sản phẩm mới hoặc tìm đề xuất dựa trên sở thích hoặc giao dịch mua trước đây của họ.
          b. Truy xuất thông tin sản phẩm: Sử dụng lời nhắc này khi người dùng tìm kiếm thông tin chi tiết về một sản phẩm cụ thể, chẳng hạn như tính năng, thông số kỹ thuật hoặc đánh giá.
          c. Câu hỏi thường gặp Trả lời: Sử dụng lời nhắc này khi truy vấn của người dùng phù hợp với các câu hỏi thường gặp hoặc giải quyết các vấn đề hỗ trợ kỹ thuật, chính sách của các sản phẩm.
@@ -49,7 +50,6 @@ def get_prompt_input(user_input: str):
          e. Khác: Sử dụng lời nhắc này cho các truy vấn không phù hợp với các danh mục trước đó, chẳng hạn như cung cấp hỗ trợ chung, cung cấp hỗ trợ quản lý tài khoản hoặc xử lý phản hồi.""",
         }
     )
-
 
 def handle_user_prompt(user_prompt):
     user_prompt = user_prompt.splitlines()
@@ -59,11 +59,11 @@ def handle_user_prompt(user_prompt):
         if line.strip().startswith("Answer:") or line.strip().startswith("Explain:")
     ]
 
-
 def handle_conversation_turn(user_input: str):
     while True:
-        user_prompt = get_prompt_input(user_input)
-        return_prompt = handle_user_prompt(user_prompt["text"])
+        user_prompt_analyzed = get_prompt_input(user_input)
+        print("user_prompt_analyzed",user_prompt_analyzed)
+        return_prompt = handle_user_prompt(user_prompt_analyzed["text"])
         if return_prompt is not None:
             try:
                 if (
@@ -77,11 +77,9 @@ def handle_conversation_turn(user_input: str):
                         return return_prompt[-1]
                     return return_prompt[0]
             except:
-                print("Error")
-
+                print("Error, cannot classify user input")
 
 tools = [tool_get_RAG()]
-
 
 def generate_agent(input):
     user_prompt = handle_conversation_turn(input)
@@ -149,17 +147,64 @@ def generate_agent(input):
     )
     return agent_executor
 
-
-def load_agent(input):
-    agent = generate_agent(input)
-    return agent
-
-
 def handle_react_chat(agent, input):
     # print(agent.memory.load_memory_variables({}))
     return agent.invoke({"input": input})
 
+# if __name__ == "__main__":
+#     agent = generate_agent("Giới thiệu cho tôi những mẫu điện thoại dưới 700k đáng xem")
+#     print(handle_react_chat(agent, "Giới thiệu cho tôi những mẫu điện thoại dưới 700k đáng xem"))
 
-if __name__ == "__main__":
-    agent = load_agent("Giới thiệu cho tôi những mẫu điện thoại dưới 700k đáng xem")
-    print(handle_react_chat(agent, "Giới thiệu cho tôi những mẫu điện thoại dưới 700k đáng xem"))
+
+# Handle new user input
+agent = generate_agent("Giới thiệu cho tôi những mẫu điện thoại dưới 700k đáng xem")
+
+# Setting page title and header
+st.set_page_config(page_title="SOPE", page_icon=":robot_face:")
+st.markdown("<h1 style='text-align: center;'>SOPE - Your smart Shopping Assistant 😬</h1>", unsafe_allow_html=True)
+
+# Initialise session state variables
+if 'generated' not in st.session_state:
+    st.session_state['generated'] = []
+if 'past' not in st.session_state:
+    st.session_state['past'] = []
+if 'messages' not in st.session_state:
+    st.session_state['messages'] = [
+        {"role": "system", "content": "You are a helpful assistant."}
+    ]
+
+# Sidebar - let user choose model, show total cost of current conversation, and let user clear the current conversation
+st.sidebar.title("Sidebar")
+counter_placeholder = st.sidebar.empty()
+clear_button = st.sidebar.button("Clear Conversation", key="clear")
+
+# reset everything
+if clear_button:
+    st.session_state['generated'] = []
+    st.session_state['past'] = []
+    st.session_state['messages'] = [
+        {"role": "system", "content": "You are a helpful assistant."}
+    ]
+
+# container for chat history
+response_container = st.container()
+# container for text box
+container = st.container()
+
+with container:
+    with st.form(key='my_form', clear_on_submit=True):
+        user_input = st.text_area("You:", key='input', height=100)
+        submit_button = st.form_submit_button(label='Send')
+
+    if submit_button and user_input:
+        print("user_input",user_input)
+        output = handle_react_chat(agent,user_input)
+        print("output",output)
+        st.session_state['past'].append(user_input)
+        st.session_state['generated'].append(output["output"])
+
+if st.session_state['generated']:
+    with response_container:
+        for i in range(len(st.session_state['generated'])):
+            message(st.session_state["past"][i], is_user=True, key=str(i) + '_user')
+            message(st.session_state["generated"][i], key=str(i))
